@@ -1,46 +1,55 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(coms_steering)
 
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+if(COMPILER_SUPPORTS_CXX11)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
+elseif(COMPILER_SUPPORTS_CXX0X)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+else()
+    message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+endif()
 
-
-find_package(catkin REQUIRED)
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  std_msgs
+  serial
+)
 
 find_package(Boost REQUIRED COMPONENTS system)
 
-###################################
-## catkin specific configuration ##
-###################################
-## The catkin_package macro generates cmake config files for your package
-## Declare things to be passed to dependent projects
-## INCLUDE_DIRS: uncomment this if you package contains header files
-## LIBRARIES: libraries you create in this project that dependent projects also need
-## CATKIN_DEPENDS: catkin_packages dependent projects also need
-## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  LIBRARIES coms_steering
+  LIBRARIES coms_steering SteeringController
   INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp serial
+  CATKIN_DEPENDS roscpp std_msgs serial
 )
 
-include_directories(include)
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+  ${PROJECT_SOURCE_DIR}/include
+)
 
-add_library(coms_steering
+add_library(
+  SteeringController
+  src/SteeringController.cpp
+)
+
+add_library(
+  coms_steering
   src/coms_steering.cpp
 )
-
-## Add cmake target dependencies of the library
-## as an example, code may need to be generated before libraries
-## either from message generation or dynamic reconfigure
-# add_dependencies(coms_steering ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_executable(coms_steering_node src/coms_steering_node.cpp)
 
 target_link_libraries(coms_steering_node
   coms_steering
+  SteeringController
   ${catkin_LIBRARIES}
 )
 
-install(TARGETS coms_steering coms_steering_node
+install(TARGETS coms_steering SteeringController coms_steering_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

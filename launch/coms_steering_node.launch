@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-  <node pkg="coms_steering" type="coms_steering_node" name="steering">
-    <rosparam command="load" file="$(find coms_steering)/configs/params.yaml"
+  <node pkg="coms_steering" type="coms_steering_node" name="steering" output="screen">
+    <rosparam command="load" file="$(find coms_steering)/configs/coms.yaml" />
+  </node>
 </launch>
