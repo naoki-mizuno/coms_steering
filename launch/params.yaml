@@ -1,0 +1,2 @@
+port: /dev/ttyUSB3
+baudrate: 38400
