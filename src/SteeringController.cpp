@@ -88,7 +88,7 @@ SteeringController::set(const double ang, const double ang_vel, const double ang
     // Speed
     writeline("S.1=", rad2pulse(ang_vel));
     // Acceleration
-    writeline("A.1=", rad2pulse(ang_vel));
+    writeline("A.1=", rad2pulse(ang_acc));
     // Torque limit
     writeline("M.1=", DEFAULT_M);
     // Go!

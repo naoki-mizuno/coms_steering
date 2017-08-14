@@ -14,7 +14,7 @@ public:
     static const unsigned READ_WRITE_TIMEOUT_MS = 250;
 
     // Default speed for Cool Muscle (pulse/s)
-    static const int DEFAULT_S = 50;
+    static const int DEFAULT_S = 40;
     // Default acceleration for Cool Muscle (pulse/s^2)
     static const int DEFAULT_A = 50;
     // Default torque for Cool Muscle
@@ -76,9 +76,15 @@ public:
     void
     set(const double ang, const double ang_vel, const double ang_acc);
 
+    /**
+     * Uses the default acceleration
+     */
     void
     set(const double ang, const double ang_vel);
 
+    /**
+     * Uses the default velocity and acceleration
+     */
     void
     set(const double ang);
 
