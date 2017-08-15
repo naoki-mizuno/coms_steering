@@ -9,8 +9,8 @@ wheelbase: 1.53
 rear_shaft_to_body_center: 1.6
 # Maximum rotation angle (in radians) and the corresponding pulse count
 # Set to 630 degrees for both directions
-limit_ccw: [ 10.9955742875643,  18154]
-limit_cw:  [-10.9955742875643, -18714]
+limit_ccw: [ 10.9955742875643,  25430]
+limit_cw:  [-10.9955742875643, -25989]
 # How much the steering turns divided by how much the wheel turns
 # Used to determine how much the steering should be rotated in order to achive
 # a certain turning rate
