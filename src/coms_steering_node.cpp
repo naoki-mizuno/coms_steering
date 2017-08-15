@@ -76,12 +76,35 @@ main(int argc, char* argv[]) {
     std_msgs::Float64 msg_angle;
     while (ros::ok()) {
         // TODO: do stuff here
-        ROS_INFO("origin");
+        const double pi = 3.14159265358979323846;
+
+        std::cout << "CCW" << std::endl;
+        std::cout << "180" << std::endl;
+        steering.set(pi);
+        sleep(1);
         steering.set(0);
-        ROS_INFO("CCW");
-        steering.set(3.1415926535);
-        ROS_INFO("CW");
-        steering.set(-3.1415926535);
+        std::cout << "90" << std::endl;
+        steering.set(pi / 2);
+        sleep(1);
+        steering.set(0);
+        std::cout << "45" << std::endl;
+        steering.set(pi / 4);
+        sleep(1);
+        steering.set(0);
+
+        std::cout << "CW" << std::endl;
+        std::cout << "-180" << std::endl;
+        steering.set(-pi);
+        sleep(1);
+        steering.set(0);
+        std::cout << "-90" << std::endl;
+        steering.set(-pi / 2);
+        sleep(1);
+        steering.set(0);
+        std::cout << "-45" << std::endl;
+        steering.set(-pi / 4);
+        sleep(1);
+        steering.set(0);
 
         ros::spinOnce();
         r.sleep();
