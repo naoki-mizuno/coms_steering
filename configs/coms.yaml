@@ -2,7 +2,7 @@
 port: /dev/ttyUSB0
 baudrate: 38400
 # Difference in pulse count between the mechanical and electrical origin
-origin_offset: 180
+origin_offset: 300
 # Distance between the centers of the front and rear wheels (meters)
 wheelbase: 1.53
 # Distance between the rear shaft and the body center (meters)
