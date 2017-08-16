@@ -2,6 +2,8 @@
 
 using pulse_t = SteeringController::pulse_t;
 
+bool SteeringController::abort = false;
+
 /* Constructors, Destructor, and Assignment operators {{{ */
 SteeringController::SteeringController(const std::string& port,
                                        const unsigned baudrate,
@@ -71,7 +73,8 @@ void
 SteeringController::on() {
     writeline("(.1");
     int response_code;
-    readline("Ux.1=%d", response_code);
+    // Data could be empty when already on
+    readline("Ux.1=%d", response_code, true);
     // TODO: check if response_code was 8
 }
 
@@ -175,13 +178,19 @@ SteeringController::writeline(const std::string& line) {
 
 template<typename T>
 void
-SteeringController::readline(const std::string& fmt, T& var) {
+SteeringController::readline(const std::string& fmt,
+                             T& var,
+                             const bool allow_empty /* = false */) {
     unsigned read_tokens = 0;
-    while (read_tokens == 0) {
+    while (read_tokens == 0 && !SteeringController::abort) {
         // Read a line, and then parse it
         std::string line;
-        while (line.empty()) {
+        while (line.empty() && !SteeringController::abort) {
             line = to_cool_muscle.readline();
+
+            if (allow_empty) {
+                break;
+            }
         }
 
         // Trim CRLF
@@ -190,5 +199,9 @@ SteeringController::readline(const std::string& fmt, T& var) {
         }
 
         read_tokens = sscanf(line.c_str(), fmt.c_str(), &var);
+
+        if (allow_empty) {
+            return;
+        }
     }
 }

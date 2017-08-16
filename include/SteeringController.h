@@ -12,6 +12,8 @@ public:
     using pulse_t = long long int;
 
     static const unsigned READ_WRITE_TIMEOUT_MS = 250;
+    // Flag for aborting program
+    static bool abort;
 
     // Default speed for Cool Muscle (rad/s)
     static constexpr double DEFAULT_S = 0.01729543733789115;
@@ -169,10 +171,15 @@ private:
      * \param[in] fmt format of the line. Same as what you give to scanf
      *
      * \param[in] var variable to be populated
+     *
+     * \param[in] allow_empty whether the data could be an empty string. In
+     *                        this case, exactly one line is read regardless
+     *                        of whether it matches the given format. If the
+     *                        format matches, var is populated.
      */
     template<typename T>
     void
-    readline(const std::string& fmt, T& var);
+    readline(const std::string& fmt, T& var, const bool allow_empty = false);
 };
 
 #endif /* end of include guard */

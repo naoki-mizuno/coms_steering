@@ -10,6 +10,10 @@ class ComsSteering {
 public:
     using pulse_t = SteeringController::pulse_t;
 
+    static
+    void
+    abort(const int signum);
+
     /* Constructors, Destructor, and Assignment operators {{{ */
     ComsSteering(const std::string& port,
                  const unsigned baudrate,

@@ -5,6 +5,7 @@
 #include <std_msgs/Float64.h>
 #include <serial/serial.h>
 
+#include <signal.h>
 #include <string>
 #include <vector>
 
@@ -66,6 +67,8 @@ main(int argc, char* argv[]) {
         ROS_ERROR_STREAM(e.what());
         return 1;
     }
+
+    signal(SIGINT, ComsSteering::abort);
 
     std_msgs::Float64 angle;
     ros::Publisher angle_pub = nh.advertise<std_msgs::Float64>("angle", 1);
