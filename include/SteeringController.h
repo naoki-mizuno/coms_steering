@@ -13,11 +13,11 @@ public:
 
     static const unsigned READ_WRITE_TIMEOUT_MS = 250;
 
-    // Default speed for Cool Muscle (pulse/s)
-    static const int DEFAULT_S = 40;
-    // Default acceleration for Cool Muscle (pulse/s^2)
-    static const int DEFAULT_A = 50;
-    // Default torque for Cool Muscle
+    // Default speed for Cool Muscle (rad/s)
+    static constexpr double DEFAULT_S = 0.01729543733789115;
+    // Default acceleration for Cool Muscle (rad/s^2)
+    static constexpr double DEFAULT_A = 0.02161929667236394;
+    // Default torque for Cool Muscle (percentage)
     static const int DEFAULT_M = 20;
 
     /* Constructors, Destructor, and Assignment operators {{{ */
@@ -75,19 +75,9 @@ public:
      * \param[in] ang_acc the target angular acceleration in rad/s^2
      */
     void
-    set(const double ang, const double ang_vel, const double ang_acc);
-
-    /**
-     * Uses the default acceleration
-     */
-    void
-    set(const double ang, const double ang_vel);
-
-    /**
-     * Uses the default velocity and acceleration
-     */
-    void
-    set(const double ang);
+    set(const double ang,
+        const double ang_vel = DEFAULT_S,
+        const double ang_acc = DEFAULT_A);
 
     /**
      * Sends the emergency stop command to the actuator

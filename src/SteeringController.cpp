@@ -81,7 +81,9 @@ SteeringController::off() {
 }
 
 void
-SteeringController::set(const double ang, const double ang_vel, const double ang_acc) {
+SteeringController::set(const double ang,
+                        const double ang_vel /* = DEFAULT_S */,
+                        const double ang_acc /* = DEFAULT_A */) {
     int response_code;
     // Position
     writeline("P.1=", rad2pulse(ang));
@@ -95,16 +97,6 @@ SteeringController::set(const double ang, const double ang_vel, const double ang
     writeline("^.1");
     // Status should be 8
     readline("Ux.1=%d", response_code);
-}
-
-void
-SteeringController::set(const double ang, const double ang_vel) {
-    set(ang, ang_vel, pulse2rad(DEFAULT_A));
-}
-
-void
-SteeringController::set(const double ang) {
-    set(ang, pulse2rad(DEFAULT_S), pulse2rad(DEFAULT_A));
 }
 
 void
