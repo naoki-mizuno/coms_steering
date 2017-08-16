@@ -21,10 +21,11 @@ public:
     static const int DEFAULT_M = 20;
 
     /* Constructors, Destructor, and Assignment operators {{{ */
-    SteeringController(const std::string& port, const unsigned baudrate,
-                                       const std::pair<double, pulse_t>& limit_ccw,
-                                       const std::pair<double, pulse_t>& limit_cw,
-                                       const pulse_t origin_offset = 0);
+    SteeringController(const std::string& port,
+                       const unsigned baudrate,
+                       const std::pair<double, pulse_t>& limit_ccw,
+                       const std::pair<double, pulse_t>& limit_cw,
+                       const pulse_t origin_offset = 0);
 
     // Copy constructor
     SteeringController(const SteeringController& other) = delete;

@@ -2,10 +2,9 @@
 #include "SteeringController.h"
 
 #include <ros/ros.h>
-#include <serial/serial.h>
 #include <std_msgs/Float64.h>
+#include <serial/serial.h>
 
-#include <cmath>
 #include <string>
 #include <vector>
 
@@ -43,7 +42,7 @@ main(int argc, char* argv[]) {
     auto lim_pulse_ccw = static_cast<pulse_t>(limit_ccw[1]);
     auto lim_pulse_cw = static_cast<pulse_t>(limit_cw[1]);
 
-    SteeringController steering{
+    ComsSteering controller{
         port,
         static_cast<unsigned>(baudrate),
         // Limit [rad, pulse count] for CCW direction
@@ -52,8 +51,9 @@ main(int argc, char* argv[]) {
         std::make_pair(lim_rad_cw, lim_pulse_cw),
         origin_offset,
     };
+
     try {
-        steering.connect();
+        controller.steering().connect();
         ROS_INFO("Connected to device:");
         ROS_INFO_STREAM("  PORT: " << port);
         ROS_INFO_STREAM("  BAUD: " << baudrate);
@@ -67,49 +67,25 @@ main(int argc, char* argv[]) {
         return 1;
     }
 
-    steering.init();
-
+    std_msgs::Float64 angle;
     ros::Publisher angle_pub = nh.advertise<std_msgs::Float64>("angle", 1);
-    ros::Rate r{frequency};
+    ros::Subscriber steering_sub = nh.subscribe("/cmd_steer",
+                                                1,
+                                                &ComsSteering::steer_callback,
+                                                &controller);
+    ros::Rate rate{frequency};
 
-    steering.on();
-    std_msgs::Float64 msg_angle;
+    controller.steering().init();
+
+    controller.steering().on();
     while (ros::ok()) {
-        // TODO: do stuff here
-        const double pi = 3.14159265358979323846;
+        angle.data = controller.steering().get_rad();
+        angle_pub.publish(angle);
 
-        std::cout << "CCW" << std::endl;
-        std::cout << "180" << std::endl;
-        steering.set(pi);
-        sleep(1);
-        steering.set(0);
-        std::cout << "90" << std::endl;
-        steering.set(pi / 2);
-        sleep(1);
-        steering.set(0);
-        std::cout << "45" << std::endl;
-        steering.set(pi / 4);
-        sleep(1);
-        steering.set(0);
-
-        std::cout << "CW" << std::endl;
-        std::cout << "-180" << std::endl;
-        steering.set(-pi);
-        sleep(1);
-        steering.set(0);
-        std::cout << "-90" << std::endl;
-        steering.set(-pi / 2);
-        sleep(1);
-        steering.set(0);
-        std::cout << "-45" << std::endl;
-        steering.set(-pi / 4);
-        sleep(1);
-        steering.set(0);
-
+        rate.sleep();
         ros::spinOnce();
-        r.sleep();
     }
-    steering.off();
+    controller.steering().off();
 
     return 0;
 }
