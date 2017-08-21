@@ -1,5 +1,5 @@
-#include "coms_steering.h"
-#include "SteeringController.h"
+#include "coms_steering/coms_steering.h"
+#include "coms_steering/SteeringController.h"
 
 #include <ros/ros.h>
 #include <std_msgs/Float64.h>
