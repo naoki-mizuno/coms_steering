@@ -1,5 +1,4 @@
-#port: /dev/ttyUSB3
-port: /dev/ttyUSB0
+port: /dev/ttyUSB3
 baudrate: 38400
 # Difference in pulse count between the mechanical and electrical origin
 origin_offset: 300
