@@ -87,13 +87,23 @@ void
 SteeringController::set(const double ang,
                         const double ang_vel /* = DEFAULT_S */,
                         const double ang_acc /* = DEFAULT_A */) {
+    // Prevent hang
+    auto cmd_ang_vel = ang_vel;
+    if (cmd_ang_vel == 0) {
+        cmd_ang_vel = DEFAULT_S;
+    }
+    auto cmd_ang_acc = ang_acc;
+    if (cmd_ang_acc == 0) {
+        cmd_ang_acc = DEFAULT_A;
+    }
+
     int response_code;
     // Position
     writeline("P.1=", rad2pulse(ang));
     // Speed
-    writeline("S.1=", rad2pulse(ang_vel));
+    writeline("S.1=", rad2pulse(cmd_ang_vel));
     // Acceleration
-    writeline("A.1=", rad2pulse(ang_acc));
+    writeline("A.1=", rad2pulse(cmd_ang_acc));
     // Torque limit
     writeline("M.1=", DEFAULT_M);
     // Go!
