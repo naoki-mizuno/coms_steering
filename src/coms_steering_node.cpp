@@ -12,7 +12,8 @@
 int
 main(int argc, char* argv[]) {
     ros::init(argc, argv, "coms_steering_node");
-    ros::NodeHandle nh{"~"};
+    ros::NodeHandle nh;
+    ros::NodeHandle nh_p{"~"};
 
     // Get parameters
     std::string port;
@@ -26,15 +27,15 @@ main(int argc, char* argv[]) {
     std::vector<double> limit_ccw;
     std::vector<double> limit_cw;
 
-    nh.getParam("port", port);
-    nh.param("baudrate", baudrate, 38400);
-    nh.param("frequency", frequency, static_cast<float>(1000));
-    nh.param("origin_offset", origin_offset, 0);
-    nh.getParam("limit_ccw", limit_ccw);
-    nh.getParam("limit_cw", limit_cw);
-    nh.getParam("wheelbase", wheelbase);
-    nh.getParam("steering_gear_ratio", steering_gear_ratio);
-    nh.getParam("rear_shaft_to_body_center", rear_shaft_to_body_center);
+    nh_p.getParam("port", port);
+    nh_p.param("baudrate", baudrate, 38400);
+    nh_p.param("frequency", frequency, static_cast<float>(1000));
+    nh_p.param("origin_offset", origin_offset, 0);
+    nh_p.getParam("limit_ccw", limit_ccw);
+    nh_p.getParam("limit_cw", limit_cw);
+    nh_p.getParam("wheelbase", wheelbase);
+    nh_p.getParam("steering_gear_ratio", steering_gear_ratio);
+    nh_p.getParam("rear_shaft_to_body_center", rear_shaft_to_body_center);
 
     // Convert to [double, pulse_t]
     auto lim_rad_ccw = static_cast<double>(limit_ccw[0]);
@@ -72,7 +73,7 @@ main(int argc, char* argv[]) {
 
     std_msgs::Float64 angle;
     ros::Publisher angle_pub = nh.advertise<std_msgs::Float64>("angle", 1);
-    ros::Subscriber steering_sub = nh.subscribe("/cmd_steer",
+    ros::Subscriber steering_sub = nh.subscribe("cmd_steer",
                                                 1,
                                                 &ComsSteering::steer_callback,
                                                 &controller);
