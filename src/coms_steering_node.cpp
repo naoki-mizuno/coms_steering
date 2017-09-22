@@ -20,9 +20,6 @@ main(int argc, char* argv[]) {
     int baudrate;
     float frequency;
     int origin_offset;
-    float wheelbase;
-    float steering_gear_ratio;
-    float rear_shaft_to_body_center;
     // Limits [rad, pulse count] later converted to [double, pulse_t]
     std::vector<double> limit_ccw;
     std::vector<double> limit_cw;
@@ -33,9 +30,6 @@ main(int argc, char* argv[]) {
     nh_p.param("origin_offset", origin_offset, 0);
     nh_p.getParam("limit_ccw", limit_ccw);
     nh_p.getParam("limit_cw", limit_cw);
-    nh_p.getParam("wheelbase", wheelbase);
-    nh_p.getParam("steering_gear_ratio", steering_gear_ratio);
-    nh_p.getParam("rear_shaft_to_body_center", rear_shaft_to_body_center);
 
     // Convert to [double, pulse_t]
     auto lim_rad_ccw = static_cast<double>(limit_ccw[0]);
