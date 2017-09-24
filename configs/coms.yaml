@@ -1,8 +1,12 @@
 port: /dev/ttyUSB3
 baudrate: 38400
+frequency: 10
 # Difference in pulse count between the mechanical and electrical origin
 origin_offset: 300
 # Maximum rotation angle (in radians) and the corresponding pulse count
-# Set to 630 degrees for both directions
-limit_ccw: [ 10.9955742875643,  25430]
-limit_cw:  [-10.9955742875643, -25989]
+# 360 degrees
+limit_ccw: [ 6.28318530717959,  14775]
+limit_cw:  [-6.28318530717959, -14775]
+# 630 degrees
+#limit_ccw: [ 10.9955742875643,  25430]
+#limit_cw:  [-10.9955742875643, -25989]
