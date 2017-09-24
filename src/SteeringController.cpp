@@ -108,7 +108,15 @@ SteeringController::set(const double ang,
     writeline("M.1=", DEFAULT_M);
     // Go!
     writeline("^.1");
+}
+
+void
+SteeringController::set_block(const double ang,
+                              const double ang_vel /* = DEFAULT_S */,
+                              const double ang_acc /* = DEFAULT_A */) {
+    set(ang, ang_vel, ang_acc);
     // Status should be 8
+    int response_code;
     readline("Ux.1=%d", response_code);
 }
 

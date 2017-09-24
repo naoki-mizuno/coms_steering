@@ -70,6 +70,10 @@ public:
      * angles are in the CW direction. Sign of the angular velocity is
      * ignored.
      *
+     * Unlike SteeringController::set_block, which blocks execution until the
+     * target angle is reached, this method returns as soon as it sends the
+     * command to the actuator.
+     *
      * \param[in] ang the target angle in radians
      *
      * \param[in] ang_vel the target angular velocity in rad/s
@@ -80,6 +84,23 @@ public:
     set(const double ang,
         const double ang_vel = DEFAULT_S,
         const double ang_acc = DEFAULT_A);
+
+    /**
+     * Rotates the steering wheel to an angle at the given angular velocity
+     *
+     * Same as SteeringController::set except that this method blocks
+     * execution until the target angle is reached.
+     *
+     * \param[in] ang the target angle in radians
+     *
+     * \param[in] ang_vel the target angular velocity in rad/s
+     *
+     * \param[in] ang_acc the target angular acceleration in rad/s^2
+     */
+    void
+    set_block(const double ang,
+              const double ang_vel = DEFAULT_S,
+              const double ang_acc = DEFAULT_A);
 
     /**
      * Sends the emergency stop command to the actuator
