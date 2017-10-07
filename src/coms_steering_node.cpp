@@ -5,7 +5,7 @@
 #include <std_msgs/Float64.h>
 #include <serial/serial.h>
 
-#include <signal.h>
+#include <csignal>
 #include <string>
 #include <vector>
 
@@ -17,7 +17,7 @@ main(int argc, char* argv[]) {
 
     // Get parameters
     std::string port;
-    int baudrate;
+    int baud;
     float frequency;
     int origin_offset;
     // Limits [rad, pulse count] later converted to [double, pulse_t]
@@ -25,7 +25,7 @@ main(int argc, char* argv[]) {
     std::vector<double> limit_cw;
 
     nh_p.getParam("port", port);
-    nh_p.param("baudrate", baudrate, 38400);
+    nh_p.param("baud", baud, 38400);
     nh_p.param("frequency", frequency, static_cast<float>(1000));
     nh_p.param("origin_offset", origin_offset, 0);
     nh_p.getParam("limit_ccw", limit_ccw);
@@ -40,7 +40,7 @@ main(int argc, char* argv[]) {
 
     ComsSteering controller{
         port,
-        static_cast<unsigned>(baudrate),
+        static_cast<unsigned>(baud),
         // Limit [rad, pulse count] for CCW direction
         std::make_pair(lim_rad_ccw, lim_pulse_ccw),
         // Limit [rad, pulse count] for CW direction
@@ -50,9 +50,9 @@ main(int argc, char* argv[]) {
 
     try {
         controller.steering().connect();
-        ROS_INFO("Connected to device:");
+        ROS_INFO("Connected to steering:");
         ROS_INFO_STREAM("  PORT: " << port);
-        ROS_INFO_STREAM("  BAUD: " << baudrate);
+        ROS_INFO_STREAM("  BAUD: " << baud);
     }
     catch (const serial::PortNotOpenedException& e) {
         ROS_ERROR_STREAM(e.what());

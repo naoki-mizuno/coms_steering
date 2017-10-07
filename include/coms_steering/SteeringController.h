@@ -24,7 +24,7 @@ public:
 
     /* Constructors, Destructor, and Assignment operators {{{ */
     SteeringController(const std::string& port,
-                       const unsigned baudrate,
+                       const unsigned baud,
                        const std::pair<double, pulse_t>& limit_ccw,
                        const std::pair<double, pulse_t>& limit_cw,
                        const pulse_t origin_offset = 0);
@@ -139,7 +139,7 @@ public:
      * Sets the baud rate for the Cool Muscle actuator
      */
     void
-    set_baudrate(const unsigned baudrate);
+    set_baud(const unsigned baud);
 
 private:
     // Cool Muscle actuator for braking
@@ -168,7 +168,7 @@ private:
      * Writes a line to the cool muscle after appending a CRLF
      */
     void
-    writeline(const std::string& line);
+    write_line(const std::string& line);
 
     /**
      * Writes a line to the cool muscle after appending a CRLF
@@ -178,8 +178,8 @@ private:
     template<typename T>
     inline
     void
-    writeline(const std::string& line, const T val) {
-        writeline(line + std::to_string(val));
+    write_line(const std::string& line, const T val) {
+        write_line(line + std::to_string(val));
     }
 
     /**
@@ -200,7 +200,7 @@ private:
      */
     template<typename T>
     void
-    readline(const std::string& fmt, T& var, const bool allow_empty = false);
+    read_line(const std::string& fmt, T& var, const bool allow_empty = false);
 };
 
 #endif /* end of include guard */

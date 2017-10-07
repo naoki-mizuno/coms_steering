@@ -4,18 +4,18 @@ using pulse_t = SteeringController::pulse_t;
 
 /* Static methods */
 void
-ComsSteering::abort(const int signum) {
+ComsSteering::abort(int signum) {
     ROS_INFO("Aborting...");
     SteeringController::abort = true;
     ros::shutdown();
 }
 
 ComsSteering::ComsSteering(const std::string& port,
-                           const unsigned baudrate,
+                           const unsigned baud,
                            const std::pair<double, pulse_t>& limit_ccw,
                            const std::pair<double, pulse_t>& limit_cw,
                            const pulse_t origin_offset)
-    : steering_{port, baudrate, limit_ccw, limit_cw, origin_offset}
+    : steering_{port, baud, limit_ccw, limit_cw, origin_offset}
 {
 }
 

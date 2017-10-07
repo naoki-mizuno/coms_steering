@@ -4,9 +4,9 @@ using pulse_t = SteeringController::pulse_t;
 
 bool SteeringController::abort = false;
 
-/* Constructors, Destructor, and Assignment operators {{{ */
+/* Constructors and Destructor {{{ */
 SteeringController::SteeringController(const std::string& port,
-                                       const unsigned baudrate,
+                                       const unsigned baud,
                                        const std::pair<double, pulse_t>& limit_ccw,
                                        const std::pair<double, pulse_t>& limit_cw,
                                        const pulse_t origin_offset /* = 0 */)
@@ -15,7 +15,7 @@ SteeringController::SteeringController(const std::string& port,
     , origin_offset{origin_offset}
 {
     to_cool_muscle.setPort(port);
-    to_cool_muscle.setBaudrate(baudrate);
+    to_cool_muscle.setBaudrate(baud);
     to_cool_muscle.setTimeout(serial::Timeout::max(),
                               READ_WRITE_TIMEOUT_MS, 0,
                               READ_WRITE_TIMEOUT_MS, 0);
@@ -43,27 +43,29 @@ SteeringController::init() {
     on();
 
     // Send in-position status, in/out change status, disable echo
-    writeline("K23.1=", 0b01111);
+    write_line("K23.1=", 0b01111);
     // Origin search speed
-    writeline("K42.1=10");
+    write_line("K42.1=10");
     // Origin search acceleration
-    writeline("K43.1=10");
+    write_line("K43.1=10");
     // Set unit of software limit and offset to 1 pulse unit, CW rotation
-    writeline("K45.1=222");
+    write_line("K45.1=222");
     // Use origin sensor
-    writeline("K46.1=2");
+    write_line("K46.1=2");
     // Offset distance between mechanical and electrical origins
-    writeline("K48.1=", origin_offset);
+    write_line("K48.1=", origin_offset);
+    // Set motor to free when powered on
+    write_line("K68.1=0");
 
     // Initiate origin search
-    writeline("|.1");
+    write_line("|.1");
     // Wait for origin search to complete (response should be 8)
-    readline("Ux.1=%d", response_code);
+    read_line("Ux.1=%d", response_code);
 
     // Set soft limit (for the + side == CCW direction)
-    writeline("K58=", limit_plus_ccw.second);
+    write_line("K58=", limit_plus_ccw.second);
     // Set soft limit (for the - side == CW direction)
-    writeline("K59=", limit_minus_cw.second);
+    write_line("K59=", limit_minus_cw.second);
 
     // Disable motor
     off();
@@ -71,16 +73,16 @@ SteeringController::init() {
 
 void
 SteeringController::on() {
-    writeline("(.1");
+    write_line("(.1");
     int response_code;
     // Data could be empty when already on
-    readline("Ux.1=%d", response_code, true);
+    read_line("Ux.1=%d", response_code, true);
     // TODO: check if response_code was 8
 }
 
 void
 SteeringController::off() {
-    writeline(").1");
+    write_line(").1");
 }
 
 void
@@ -106,15 +108,15 @@ SteeringController::set(const double ang,
     }
 
     // Position
-    writeline("P.1=", rad2pulse(cmd_ang));
+    write_line("P.1=", rad2pulse(cmd_ang));
     // Speed
-    writeline("S.1=", rad2pulse(cmd_ang_vel));
+    write_line("S.1=", rad2pulse(cmd_ang_vel));
     // Acceleration
-    writeline("A.1=", rad2pulse(cmd_ang_acc));
+    write_line("A.1=", rad2pulse(cmd_ang_acc));
     // Torque limit
-    writeline("M.1=", DEFAULT_M);
+    write_line("M.1=", DEFAULT_M);
     // Go!
-    writeline("^.1");
+    write_line("^.1");
 }
 
 void
@@ -124,24 +126,24 @@ SteeringController::set_block(const double ang,
     set(ang, ang_vel, ang_acc);
     // Status should be 8
     int response_code;
-    readline("Ux.1=%d", response_code);
+    read_line("Ux.1=%d", response_code);
 }
 
 void
 SteeringController::emergency() {
-    writeline("*");
+    write_line("*");
 }
 
 void
 SteeringController::release_emergency() {
-    writeline("*1");
+    write_line("*1");
 }
 
 pulse_t
 SteeringController::get_pulse_count() {
-    writeline("?96.1");
+    write_line("?96.1");
     pulse_t pulse;
-    readline("Px.1=%lld", pulse);
+    read_line("Px.1=%lld", pulse);
     return pulse;
 }
 
@@ -156,8 +158,8 @@ SteeringController::set_port(const std::string& port) {
 }
 
 void
-SteeringController::set_baudrate(const unsigned baudrate) {
-    to_cool_muscle.setBaudrate(baudrate);
+SteeringController::set_baud(const unsigned baud) {
+    to_cool_muscle.setBaudrate(baud);
 }
 
 double
@@ -193,20 +195,20 @@ SteeringController::rad2pulse(const double rad) {
         max_pulse = limit_minus_cw.second;
     }
     auto pulse_per_rad = max_pulse / max_rad;
-    return rad * pulse_per_rad;
+    return static_cast<pulse_t>(rad * pulse_per_rad);
 }
 
 void
-SteeringController::writeline(const std::string& line) {
+SteeringController::write_line(const std::string& line) {
     to_cool_muscle.write(line + "\r\n");
 }
 
 template<typename T>
 void
-SteeringController::readline(const std::string& fmt,
-                             T& var,
-                             const bool allow_empty /* = false */) {
-    unsigned read_tokens = 0;
+SteeringController::read_line(const std::string& fmt,
+                              T& var,
+                              const bool allow_empty /* = false */) {
+    int read_tokens = 0;
     while (read_tokens == 0 && !SteeringController::abort) {
         // Read a line, and then parse it
         std::string line;
