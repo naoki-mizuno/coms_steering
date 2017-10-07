@@ -13,6 +13,10 @@ SteeringController::SteeringController(const std::string& port,
     : limit_plus_ccw{limit_ccw}
     , limit_minus_cw{limit_cw}
     , origin_offset{origin_offset}
+    , stop_control{false}
+    , ang_tgt{0}
+    , ang_err_sum{0}
+    , ang_err_prev{0}
 {
     to_cool_muscle.setPort(port);
     to_cool_muscle.setBaudrate(baud);
@@ -123,6 +127,48 @@ SteeringController::set_block(const double ang,
     // Status should be 8
     int response_code;
     read_line("Ux.1=%d", response_code);
+}
+void
+SteeringController::set_target_angle(const double ang) {
+    ang_tgt = ang;
+}
+
+void
+SteeringController::start_control_loop(const double KP,
+                                       const double KI,
+                                       const double KD,
+                                       const double control_rate) {
+    // Write things that won't change
+    // Position
+    write_line("P.1=", CONTINUOUS_ROTATION);
+    // Acceleration
+    write_line("A.1=", rad2pulse(DEFAULT_A));
+    // Torque limit
+    write_line("M.1=", DEFAULT_M);
+
+    ros::Rate rate{control_rate};
+    while (!stop_control) {
+        rate.sleep();
+
+        // P
+        auto err_p = ang_tgt - get_rad();
+        // I
+        ang_err_sum += err_p;
+        // D
+        auto err_d = err_p - ang_err_prev;
+        auto cmd_ang_vel = KP * err_p + KI * ang_err_sum + KD * err_d;
+        ang_err_prev = err_p;
+
+        // Speed
+        write_line("S.1=", rad2pulse(cmd_ang_vel));
+        // Go!
+        write_line("^.1");
+    }
+}
+
+void
+SteeringController::stop_control_loop() {
+    stop_control = true;
 }
 
 void

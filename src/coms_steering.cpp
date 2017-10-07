@@ -23,7 +23,7 @@ void
 ComsSteering::steer_callback(const std_msgs::Float64MultiArray& msg) {
     // Position, speed, and acceleration in radians
     auto pos = msg.data[0];
-    auto vel = msg.data[1];
-    auto acc = msg.data[2];
-    steering_.set(pos, vel, acc);
+    //auto vel = msg.data[1];
+    //auto acc = msg.data[2];
+    steering_.set_target_angle(pos);
 }

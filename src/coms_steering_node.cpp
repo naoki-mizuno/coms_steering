@@ -18,18 +18,24 @@ main(int argc, char* argv[]) {
     // Get parameters
     std::string port;
     int baud;
-    float frequency;
+    float angle_rate;
+    float control_rate;
     int origin_offset;
     // Limits [rad, pulse count] later converted to [double, pulse_t]
     std::vector<double> limit_ccw;
     std::vector<double> limit_cw;
+    double KP, KI, KD;
 
     nh_p.getParam("port", port);
     nh_p.param("baud", baud, 38400);
-    nh_p.param("frequency", frequency, static_cast<float>(1000));
+    nh_p.param("angle_rate", angle_rate, static_cast<float>(10));
+    nh_p.param("control_rate", control_rate, static_cast<float>(20));
     nh_p.param("origin_offset", origin_offset, 0);
     nh_p.getParam("limit_ccw", limit_ccw);
     nh_p.getParam("limit_cw", limit_cw);
+    nh_p.getParam("KP", KP);
+    nh_p.getParam("KI", KI);
+    nh_p.getParam("KD", KD);
 
     // Convert to [double, pulse_t]
     auto lim_rad_ccw = static_cast<double>(limit_ccw[0]);
@@ -71,11 +77,12 @@ main(int argc, char* argv[]) {
                                                 1,
                                                 &ComsSteering::steer_callback,
                                                 &controller);
-    ros::Rate rate{frequency};
+    ros::Rate rate{angle_rate};
 
     controller.steering().init();
 
     controller.steering().on();
+    controller.steering().start_control_loop(KP, KI, KD, control_rate);
     while (ros::ok()) {
         angle.data = controller.steering().get_rad();
         angle_pub.publish(angle);
@@ -83,6 +90,7 @@ main(int argc, char* argv[]) {
         rate.sleep();
         ros::spinOnce();
     }
+    controller.steering().stop_control_loop();
     controller.steering().off();
 
     return 0;

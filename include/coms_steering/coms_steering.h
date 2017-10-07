@@ -12,7 +12,7 @@ public:
 
     static
     void
-    abort(const int signum);
+    abort(int signum);
 
     /* Constructors, Destructor, and Assignment operators {{{ */
     ComsSteering(const std::string& port,

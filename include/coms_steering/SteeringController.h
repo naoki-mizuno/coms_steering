@@ -1,6 +1,7 @@
 #ifndef BRAKE_CONTROLLER_H_
 #define BRAKE_CONTROLLER_H_
 
+#include <ros/ros.h>
 #include <serial/serial.h>
 
 #include <cstdio>
@@ -21,6 +22,9 @@ public:
     static constexpr double DEFAULT_A = 0.02161929667236394;
     // Default torque for Cool Muscle (percentage)
     static const int DEFAULT_M = 20;
+
+    // Rotate infinitely
+    static const int CONTINUOUS_ROTATION = 1000000000;
 
     /* Constructors, Destructor, and Assignment operators {{{ */
     SteeringController(const std::string& port,
@@ -74,6 +78,12 @@ public:
      * target angle is reached, this method returns as soon as it sends the
      * command to the actuator.
      *
+     * Note that even though this method does not block execution, some
+     * steering wheels, such as the one that we use, doesn't accept new
+     * target angles until it finishes the current commanded angle. For
+     * that, use set_target_angle, which does a PID control on the angular
+     * velocity, which can be adjusted while the actuator is moving.
+     *
      * \param[in] ang the target angle in radians
      *
      * \param[in] ang_vel the target angular velocity in rad/s
@@ -101,6 +111,35 @@ public:
     set_block(const double ang,
               const double ang_vel = DEFAULT_S,
               const double ang_acc = DEFAULT_A);
+
+    /**
+     * Sets the target angle for the PID control
+     *
+     * Uses PID control to reach the target angle.
+     *
+     * @param ang the target angle in radians
+     */
+    void
+    set_target_angle(const double ang);
+
+    /**
+     * Starts the PID control for the steering wheel angle
+     *
+     * @param KP
+     * @param KI
+     * @param KD
+     */
+    void
+    start_control_loop(const double KP,
+                       const double KI,
+                       const double KD,
+                       const double control_rate);
+
+    /**
+     * Stops the PID control for the steering wheel angle
+     */
+    void
+    stop_control_loop();
 
     /**
      * Sends the emergency stop command to the actuator
@@ -151,6 +190,14 @@ private:
 
     // Offset distance between mechanical and electrical origins
     pulse_t origin_offset;
+
+    bool stop_control;
+    // Target angle
+    double ang_tgt;
+    // For calculating the integral term
+    double ang_err_sum;
+    // For calculating the derivative term
+    double ang_err_prev;
 
     /**
      * Converts pulse count to radians

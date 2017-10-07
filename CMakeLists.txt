@@ -34,11 +34,13 @@ include_directories(
 add_library(
   SteeringController
   src/SteeringController.cpp
+  include/coms_steering/SteeringController.h
 )
 
 add_library(
   coms_steering
   src/coms_steering.cpp
+  include/coms_steering/coms_steering.h
 )
 
 add_executable(coms_steering_node src/coms_steering_node.cpp)
