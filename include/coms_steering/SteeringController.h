@@ -36,7 +36,7 @@ public:
     SteeringController(SteeringController&& other) = delete;
 
     // Destructor
-    ~SteeringController();
+    ~SteeringController() = default;
 
     // Assignment operator
     SteeringController&

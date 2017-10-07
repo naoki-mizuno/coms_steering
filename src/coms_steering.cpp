@@ -19,10 +19,6 @@ ComsSteering::ComsSteering(const std::string& port,
 {
 }
 
-ComsSteering::~ComsSteering()
-{
-}
-
 void
 ComsSteering::steer_callback(const std_msgs::Float64MultiArray& msg) {
     // Position, speed, and acceleration in radians

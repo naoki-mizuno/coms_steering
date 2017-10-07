@@ -20,10 +20,6 @@ SteeringController::SteeringController(const std::string& port,
                               READ_WRITE_TIMEOUT_MS, 0,
                               READ_WRITE_TIMEOUT_MS, 0);
 }
-
-SteeringController::~SteeringController()
-{
-}
 /* }}} */
 
 void

@@ -29,7 +29,7 @@ public:
     ComsSteering(ComsSteering&& other) = delete;
 
     // Destructor
-    ~ComsSteering();
+    ~ComsSteering() = default;
 
     // Assignment operator
     ComsSteering&
