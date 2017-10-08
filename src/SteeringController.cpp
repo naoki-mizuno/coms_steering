@@ -87,21 +87,13 @@ SteeringController::set(const double ang,
                         const double ang_acc /* = DEFAULT_A */) {
     // Software limit to min/max angle
     auto cmd_ang = ang;
-    if (cmd_ang > limit_plus_ccw.first) {
-        cmd_ang = limit_plus_ccw.first;
-    }
-    else if (cmd_ang < limit_minus_cw.first) {
-        cmd_ang = limit_minus_cw.first;
-    }
+    cmd_ang = ang > limit_plus_ccw.first ? limit_plus_ccw.first : cmd_ang;
+    cmd_ang = ang < limit_minus_cw.first ? limit_minus_cw.first : cmd_ang;
     // Prevent hang
     auto cmd_ang_vel = ang_vel;
-    if (cmd_ang_vel == 0) {
-        cmd_ang_vel = DEFAULT_S;
-    }
+    cmd_ang_vel = cmd_ang_vel == 0 ? DEFAULT_S : cmd_ang_vel;
     auto cmd_ang_acc = ang_acc;
-    if (cmd_ang_acc == 0) {
-        cmd_ang_acc = DEFAULT_A;
-    }
+    cmd_ang_acc = cmd_ang_acc == 0 ? DEFAULT_A : cmd_ang_acc;
 
     // Position
     write_line("P.1=", rad2pulse(cmd_ang));
