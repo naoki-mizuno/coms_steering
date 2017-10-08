@@ -152,6 +152,9 @@ private:
     // Offset distance between mechanical and electrical origins
     pulse_t origin_offset;
 
+    // Steering wheel rotation is CCW
+    int is_ccw;
+
     /**
      * Converts pulse count to radians
      */
@@ -164,6 +167,15 @@ private:
     pulse_t
     rad2pulse(const double rad);
 
+    /**
+     * Checks whether the rotation direction of the wheel has changed.
+     * @param is_ccw
+     * @param tgt_ang
+     * @param cur_ang
+     * @return true if it has changed, false otherwise
+     */
+    bool
+    direction_changed(bool is_ccw, double tgt_ang, double cur_ang);
     /**
      * Writes a line to the cool muscle after appending a CRLF
      */

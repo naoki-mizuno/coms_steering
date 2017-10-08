@@ -13,6 +13,7 @@ SteeringController::SteeringController(const std::string& port,
     : limit_plus_ccw{limit_ccw}
     , limit_minus_cw{limit_cw}
     , origin_offset{origin_offset}
+    , is_ccw{false}
 {
     to_cool_muscle.setPort(port);
     to_cool_muscle.setBaudrate(baud);
@@ -85,6 +86,11 @@ void
 SteeringController::set(const double ang,
                         const double ang_vel /* = DEFAULT_S */,
                         const double ang_acc /* = DEFAULT_A */) {
+    if (direction_changed(is_ccw, ang, get_rad())) {
+        // Stop motor
+        write_line("].1");
+    }
+    is_ccw = (ang - get_rad()) > 0;
     // Software limit to min/max angle
     auto cmd_ang = ang;
     cmd_ang = ang > limit_plus_ccw.first ? limit_plus_ccw.first : cmd_ang;
@@ -184,6 +190,21 @@ SteeringController::rad2pulse(const double rad) {
     }
     auto pulse_per_rad = max_pulse / max_rad;
     return static_cast<pulse_t>(rad * pulse_per_rad);
+}
+
+bool
+SteeringController::direction_changed(bool is_ccw,
+                                      double tgt_ang,
+                                      double cur_ang) {
+    if (is_ccw && tgt_ang - cur_ang < 0) {
+        // Rotating CCW, commanded to turn CW
+        return true;
+    }
+    else if (!is_ccw && tgt_ang - cur_ang > 0) {
+        // Rotating CW, commanded to turn CCW
+        return true;
+    }
+    return false;
 }
 
 void
