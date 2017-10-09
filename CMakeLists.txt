@@ -21,7 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(Boost REQUIRED COMPONENTS system)
 
 catkin_package(
-  LIBRARIES coms_steering SteeringController
+  LIBRARIES coms_steering
   INCLUDE_DIRS include
   CATKIN_DEPENDS roscpp std_msgs serial
 )
@@ -29,12 +29,6 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/include
-)
-
-add_library(
-  SteeringController
-  src/SteeringController.cpp
-  include/coms_steering/SteeringController.h
 )
 
 add_library(
@@ -47,11 +41,10 @@ add_executable(coms_steering_node src/coms_steering_node.cpp)
 
 target_link_libraries(coms_steering_node
   coms_steering
-  SteeringController
   ${catkin_LIBRARIES}
 )
 
-install(TARGETS coms_steering SteeringController coms_steering_node
+install(TARGETS coms_steering coms_steering_node
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

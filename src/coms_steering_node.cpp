@@ -1,5 +1,5 @@
 #include "coms_steering/coms_steering.h"
-#include "coms_steering/SteeringController.h"
+#include "coms_steering/coms_steering.h"
 
 #include <ros/ros.h>
 #include <std_msgs/Float64.h>
@@ -8,6 +8,17 @@
 #include <csignal>
 #include <string>
 #include <vector>
+
+ComsSteering* controller_ptr;
+
+void
+signal_handler(int signum) {
+    if (controller_ptr != nullptr) {
+        controller_ptr->off();
+        ros::shutdown();
+        std::exit(0);
+    }
+}
 
 int
 main(int argc, char* argv[]) {
@@ -34,9 +45,8 @@ main(int argc, char* argv[]) {
     // Convert to [double, pulse_t]
     auto lim_rad_ccw = static_cast<double>(limit_ccw[0]);
     auto lim_rad_cw = static_cast<double>(limit_cw[0]);
-    using pulse_t = SteeringController::pulse_t;
-    auto lim_pulse_ccw = static_cast<pulse_t>(limit_ccw[1]);
-    auto lim_pulse_cw = static_cast<pulse_t>(limit_cw[1]);
+    auto lim_pulse_ccw = static_cast<ComsSteering::pulse_t>(limit_ccw[1]);
+    auto lim_pulse_cw = static_cast<ComsSteering::pulse_t>(limit_cw[1]);
 
     ComsSteering controller{
         port,
@@ -49,7 +59,7 @@ main(int argc, char* argv[]) {
     };
 
     try {
-        controller.steering().connect();
+        controller.connect();
         ROS_INFO("Connected to steering:");
         ROS_INFO_STREAM("  PORT: " << port);
         ROS_INFO_STREAM("  BAUD: " << baud);
@@ -63,7 +73,8 @@ main(int argc, char* argv[]) {
         return 1;
     }
 
-    signal(SIGINT, ComsSteering::abort);
+    controller_ptr = &controller;
+    signal(SIGINT, signal_handler);
 
     std_msgs::Float64 angle;
     ros::Publisher angle_pub = nh.advertise<std_msgs::Float64>("angle", 1);
@@ -73,17 +84,17 @@ main(int argc, char* argv[]) {
                                                 &controller);
     ros::Rate rate{frequency};
 
-    controller.steering().init();
+    controller.init();
 
-    controller.steering().on();
+    controller.on();
     while (ros::ok()) {
-        angle.data = controller.steering().get_rad();
+        angle.data = controller.get_rad();
         angle_pub.publish(angle);
 
         rate.sleep();
         ros::spinOnce();
     }
-    controller.steering().off();
+    controller.off();
 
     return 0;
 }
