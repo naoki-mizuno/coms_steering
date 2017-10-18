@@ -9,6 +9,7 @@ ComsSteering::ComsSteering(const std::string& port,
                            const double KP,
                            const double KI,
                            const double KD,
+                           const double max_ang_vel,
                            const double control_rate,
                            const pulse_t origin_offset)
     : limit_plus_ccw{limit_ccw}
@@ -16,6 +17,7 @@ ComsSteering::ComsSteering(const std::string& port,
     , KP{KP}
     , KI{KI}
     , KD{KD}
+    , max_ang_vel{max_ang_vel}
     , control_rate{control_rate}
     , origin_offset{origin_offset}
     , is_ccw{false}

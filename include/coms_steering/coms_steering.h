@@ -33,6 +33,7 @@ public:
                  const double KP,
                  const double KI,
                  const double KD,
+                 const double max_ang_vel,
                  const double control_rate,
                  const pulse_t origin_offset = 0);
 
@@ -188,6 +189,7 @@ private:
     std::pair<double, pulse_t> limit_minus_cw;
 
     double KP, KI, KD;
+    double max_ang_vel;
     double control_rate;
 
     // Offset distance between mechanical and electrical origins

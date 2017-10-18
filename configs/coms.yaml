@@ -11,6 +11,8 @@ limit_cw:  [-6.28318530717959, -14775]
 # 630 degrees
 #limit_ccw: [ 10.9955742875643,  25430]
 #limit_cw:  [-10.9955742875643, -25989]
-KP: 0.1
-KI: 0.05
-KD: 0.05
+KP: 0.009
+KI: 0.001
+KD: 0.001
+# Maximum angular velocity allowed for the steering wheel (absolute value)
+max_ang_vel: 1.2

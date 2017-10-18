@@ -30,23 +30,25 @@ main(int argc, char* argv[]) {
     std::string port;
     int baud;
     float angle_rate;
-    float control_rate;
-    int origin_offset;
     // Limits [rad, pulse count] later converted to [double, pulse_t]
     std::vector<double> limit_ccw;
     std::vector<double> limit_cw;
     double KP, KI, KD;
+    double max_ang_vel;
+    float control_rate;
+    int origin_offset;
 
     nh_p.getParam("port", port);
     nh_p.param("baud", baud, 38400);
     nh_p.param("angle_rate", angle_rate, static_cast<float>(10));
-    nh_p.param("control_rate", control_rate, static_cast<float>(20));
-    nh_p.param("origin_offset", origin_offset, 0);
     nh_p.getParam("limit_ccw", limit_ccw);
     nh_p.getParam("limit_cw", limit_cw);
     nh_p.getParam("KP", KP);
     nh_p.getParam("KI", KI);
     nh_p.getParam("KD", KD);
+    nh_p.getParam("max_ang_vel", max_ang_vel);
+    nh_p.param("control_rate", control_rate, static_cast<float>(20));
+    nh_p.param("origin_offset", origin_offset, 0);
 
     // Convert to [double, pulse_t]
     auto lim_rad_ccw = static_cast<double>(limit_ccw[0]);
@@ -61,7 +63,7 @@ main(int argc, char* argv[]) {
         std::make_pair(lim_rad_ccw, lim_pulse_ccw),
         // Limit [rad, pulse count] for CW direction
         std::make_pair(lim_rad_cw, lim_pulse_cw),
-        KP, KI, KD, control_rate,
+        KP, KI, KD, max_ang_vel, control_rate,
         origin_offset
     };
 
