@@ -95,13 +95,6 @@ main(int argc, char* argv[]) {
 
     controller.on();
     controller.start_control_loop();
-    while (ros::ok()) {
-        angle.data = controller.get_rad();
-        angle_pub.publish(angle);
-
-        rate.sleep();
-        ros::spinOnce();
-    }
     controller.off();
 
     return 0;

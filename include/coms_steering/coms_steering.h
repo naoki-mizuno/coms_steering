@@ -196,7 +196,6 @@ private:
     // Steering wheel rotation is CCW
     bool is_ccw;
 
-    bool stop_control;
     // Target angle
     double ang_tgt;
     // For calculating the integral term

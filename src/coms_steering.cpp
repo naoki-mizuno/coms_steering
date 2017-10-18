@@ -19,7 +19,6 @@ ComsSteering::ComsSteering(const std::string& port,
     , control_rate{control_rate}
     , origin_offset{origin_offset}
     , is_ccw{false}
-    , stop_control{false}
     , ang_tgt{0}
     , ang_err_sum{0}
     , ang_err_prev{0}
@@ -97,7 +96,6 @@ ComsSteering::on() {
 void
 ComsSteering::off() {
     write_line(").1");
-    stop_control = true;
 }
 
 void
@@ -144,9 +142,6 @@ ComsSteering::set_block(const double ang,
 void
 ComsSteering::set_target_angle(const double ang) {
     ang_tgt = ang;
-    if (stop_control) {
-        stop_control = false;
-    }
 }
 
 void
@@ -160,8 +155,9 @@ ComsSteering::start_control_loop() {
     write_line("M.1=", DEFAULT_M);
 
     ros::Rate rate{control_rate};
-    while (!stop_control) {
+    while (ros::ok()) {
         rate.sleep();
+        ros::spinOnce();
 
         // P
         auto err_p = ang_tgt - get_rad();
@@ -177,11 +173,13 @@ ComsSteering::start_control_loop() {
             write_line("[.1");
             // Position
             write_line("P.1=", -CONTINUOUS_ROTATION);
+            is_ccw = false;
         }
         else if (!is_ccw && cmd_ang_vel > 0){
             write_line("[.1");
             // Position
             write_line("P.1=", CONTINUOUS_ROTATION);
+            is_ccw = true;
         }
         // Speed
         write_line("S.1=", rad2pulse(cmd_ang_vel));
