@@ -168,17 +168,20 @@ ComsSteering::start_control_loop() {
         // D
         auto err_d = err_p - ang_err_prev;
         auto cmd_ang_vel = KP * err_p + KI * ang_err_sum + KD * err_d;
+        if (std::fabs(cmd_ang_vel) > max_ang_vel) {
+            cmd_ang_vel = max_ang_vel;
+        }
         ang_err_prev = err_p;
 
         // Need to stop rotating when trying to rotate in the other direction
         if (is_ccw && cmd_ang_vel < 0) {
-            write_line("[.1");
+            write_line("].1");
             // Position
             write_line("P.1=", -CONTINUOUS_ROTATION);
             is_ccw = false;
         }
         else if (!is_ccw && cmd_ang_vel > 0){
-            write_line("[.1");
+            write_line("].1");
             // Position
             write_line("P.1=", CONTINUOUS_ROTATION);
             is_ccw = true;
