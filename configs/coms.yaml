@@ -5,8 +5,10 @@ frequency: 10
 origin_offset: 300
 # Maximum rotation angle (in radians) and the corresponding pulse count
 # 360 degrees
-limit_ccw: [ 6.28318530717959,  14775]
-limit_cw:  [-6.28318530717959, -14775]
+# limit_ccw: [ 6.28318530717959,  14775]
+# limit_cw:  [-6.28318530717959, -14775]
 # 630 degrees
 #limit_ccw: [ 10.9955742875643,  25430]
 #limit_cw:  [-10.9955742875643, -25989]
+limit_ccw: [ 10.9955742875643,  25856]
+limit_cw:  [-10.9955742875643, -25856]
