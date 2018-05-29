@@ -14,7 +14,7 @@ endif()
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
-  std_msgs
+  coms_msgs
   serial
 )
 
@@ -23,7 +23,7 @@ find_package(Boost REQUIRED COMPONENTS system)
 catkin_package(
   LIBRARIES coms_steering
   INCLUDE_DIRS include
-  CATKIN_DEPENDS roscpp std_msgs serial
+  CATKIN_DEPENDS roscpp coms_msgs serial
 )
 
 include_directories(

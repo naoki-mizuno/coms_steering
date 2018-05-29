@@ -2,7 +2,7 @@
 #define COMS_STEERING_H_
 
 #include <ros/ros.h>
-#include <std_msgs/Float64MultiArray.h>
+#include <coms_msgs/Steering.h>
 #include <serial/serial.h>
 
 #include <cstdio>
@@ -48,7 +48,7 @@ public:
     /* }}} */
 
     void
-    steer_callback(const std_msgs::Float64MultiArray& msg);
+    steer_callback(const coms_msgs::Steering& msg);
 
     void
     connect();
