@@ -2,6 +2,7 @@
 #define COMS_STEERING_H_
 
 #include <ros/ros.h>
+#include <std_srvs/SetBool.h>
 #include <coms_msgs/Steering.h>
 #include <serial/serial.h>
 
@@ -49,6 +50,10 @@ public:
 
     void
     steer_callback(const coms_msgs::Steering& msg);
+
+    bool
+    enable_callback(std_srvs::SetBoolRequest& req,
+                    std_srvs::SetBoolResponse& res);
 
     void
     connect();
@@ -145,7 +150,9 @@ public:
     set_baud(const unsigned baud);
 
 private:
+    ros::NodeHandle nh;
     ros::Subscriber steering_sub;
+    ros::ServiceServer enable_service;
 
     // Cool Muscle actuator for braking
     serial::Serial to_cool_muscle;

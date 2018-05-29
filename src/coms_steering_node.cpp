@@ -78,10 +78,6 @@ main(int argc, char* argv[]) {
 
     std_msgs::Float64 angle;
     ros::Publisher angle_pub = nh.advertise<std_msgs::Float64>("angle", 1);
-    ros::Subscriber steering_sub = nh.subscribe("cmd_steer",
-                                                1,
-                                                &ComsSteering::steer_callback,
-                                                &controller);
     ros::Rate rate{frequency};
 
     controller.init();

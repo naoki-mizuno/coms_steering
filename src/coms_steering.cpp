@@ -17,12 +17,38 @@ ComsSteering::ComsSteering(const std::string& port,
     to_cool_muscle.setTimeout(serial::Timeout::max(),
                               READ_WRITE_TIMEOUT_MS, 0,
                               READ_WRITE_TIMEOUT_MS, 0);
+    steering_sub = nh.subscribe("cmd_steer",
+                                1,
+                                &ComsSteering::steer_callback,
+                                this);
+    enable_service = nh.advertiseService("enable",
+                                         &ComsSteering::enable_callback,
+                                         this);
 }
 
 void
 ComsSteering::steer_callback(const coms_msgs::Steering& msg) {
     // Position, speed, and acceleration in radians
     set(msg.pos, msg.vel, msg.acc);
+}
+
+bool
+ComsSteering::enable_callback(std_srvs::SetBoolRequest& req,
+                              std_srvs::SetBoolResponse& res) {
+    std::string msg = "Steering wheel actuator turned ";
+    if (req.data) {
+        on();
+        msg += "on";
+    }
+    else {
+        off();
+        msg += "off";
+    }
+
+    res.success = true;
+    res.message = msg;
+
+    return true;
 }
 
 void
