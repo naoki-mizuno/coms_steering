@@ -2,26 +2,47 @@
 
 using pulse_t = ComsSteering::pulse_t;
 
-ComsSteering::ComsSteering(const std::string& port,
-                           const unsigned baud,
-                           const std::pair<double, pulse_t>& limit_ccw,
-                           const std::pair<double, pulse_t>& limit_cw,
-                           const pulse_t origin_offset)
-    : limit_plus_ccw{limit_ccw}
-    , limit_minus_cw{limit_cw}
-    , origin_offset{origin_offset}
+ComsSteering::ComsSteering(const std::string& topic_prefix)
+    : nh{}
+    , nh_p{"~"}
     , is_ccw{false}
 {
+    // Get parameters
+    std::string port;
+    int baud;
+    int origin_offset;
+    // Limits [rad, pulse count] later converted to [double, pulse_t]
+    std::vector<double> limit_ccw;
+    std::vector<double> limit_cw;
+
+    nh_p.getParam("port", port);
+    nh_p.param("baud", baud, 38400);
+    nh_p.param("origin_offset", origin_offset, 0);
+    nh_p.getParam("limit_ccw", limit_ccw);
+    nh_p.getParam("limit_cw", limit_cw);
+
+    // Convert to [double, pulse_t]
+    auto lim_rad_ccw = static_cast<double>(limit_ccw[0]);
+    auto lim_rad_cw = static_cast<double>(limit_cw[0]);
+    auto lim_pulse_ccw = static_cast<ComsSteering::pulse_t>(limit_ccw[1]);
+    auto lim_pulse_cw = static_cast<ComsSteering::pulse_t>(limit_cw[1]);
+    // Limit [rad, pulse count] for CCW direction
+    limit_plus_ccw = std::make_pair(lim_rad_ccw, lim_pulse_ccw);
+    // Limit [rad, pulse count] for CW direction
+    limit_minus_cw = std::make_pair(lim_rad_cw, lim_pulse_cw);
+
+    // Serial port configurations
     to_cool_muscle.setPort(port);
     to_cool_muscle.setBaudrate(baud);
     to_cool_muscle.setTimeout(serial::Timeout::max(),
                               READ_WRITE_TIMEOUT_MS, 0,
                               READ_WRITE_TIMEOUT_MS, 0);
-    steering_sub = nh.subscribe("cmd_steer",
+
+    steering_sub = nh.subscribe(topic_prefix + "cmd_steer",
                                 1,
                                 &ComsSteering::steer_callback,
                                 this);
-    enable_service = nh.advertiseService("enable",
+    enable_service = nh.advertiseService(topic_prefix + "enable",
                                          &ComsSteering::enable_callback,
                                          this);
 }

@@ -24,11 +24,7 @@ public:
     static const int DEFAULT_M = 20;
 
     /* Constructors, Destructor, and Assignment operators {{{ */
-    ComsSteering(const std::string& port,
-                 const unsigned baud,
-                 const std::pair<double, pulse_t>& limit_ccw,
-                 const std::pair<double, pulse_t>& limit_cw,
-                 const pulse_t origin_offset = 0);
+    ComsSteering(const std::string& topic_prefix);
 
     // Copy constructor
     ComsSteering(const ComsSteering& other) = delete;
@@ -151,6 +147,7 @@ public:
 
 private:
     ros::NodeHandle nh;
+    ros::NodeHandle nh_p;
     ros::Subscriber steering_sub;
     ros::ServiceServer enable_service;
 

@@ -1,6 +1,7 @@
 port: /dev/ttyUSB3
 baudrate: 38400
 frequency: 10
+topic_prefix: steering
 # Difference in pulse count between the mechanical and electrical origin
 origin_offset: 300
 # Maximum rotation angle (in radians) and the corresponding pulse count
